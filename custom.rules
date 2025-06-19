@@ -1,0 +1,53 @@
+# =============================
+# Snort Custom Rules
+# Author: Aayush Yadav
+# Purpose: Detect brute-force and port scan attacks
+# =============================
+
+# 🔐 Rule 1: SSH Brute Force Attack Detection
+# Detects multiple connection attempts to port 22 (SSH)
+alert tcp any any -> any 22 (
+    msg:"Possible SSH Brute Force Attack";
+    flow:to_server,established;
+    detection_filter:track by_src, count 5, seconds 60;
+    sid:1000001;
+    rev:1;
+)
+
+# 🌐 Rule 2: SYN Port Scan Detection
+# Detects a large number of SYN packets sent to different ports
+alert tcp any any -> any any (
+    msg:"Possible TCP SYN Port Scan Detected";
+    flags:S;
+    detection_filter:track by_src, count 10, seconds 10;
+    sid:1000002;
+    rev:1;
+)
+
+# 🌍 Rule 3: Access to Suspicious Web Page (e.g., /admin)
+alert tcp any any -> any 80 (
+    msg:"Access to suspicious /admin page";
+    content:"GET /admin";
+    http_method;
+    sid:1000003;
+    rev:1;
+)
+
+# 💥 Rule 4: ICMP Ping Flood Detection (simple)
+alert icmp any any -> any any (
+    msg:"ICMP Ping Flood Possible";
+    detection_filter:track by_src, count 20, seconds 10;
+    sid:1000004;
+    rev:1;
+)
+
+# ✉️ Rule 5: Possible FTP Login Brute Force (port 21)
+alert tcp any any -> any 21 (
+    msg:"FTP Brute Force Attempt Detected";
+    flow:to_server,established;
+    detection_filter:track by_src, count 5, seconds 60;
+    sid:1000005;
+    rev:1;
+)
+
+# ✅ End of Rules
